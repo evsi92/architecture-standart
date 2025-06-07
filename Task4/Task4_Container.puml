@@ -39,6 +39,8 @@ Rel(site, kafka,"Заявки пользователей")
 
 Rel(application, aggregatorFinanceData,"Получает информацию о текущих предложения банках, в том числе персонализированных")
 Rel(site, aggregatorFinanceData,"Получает информацию о текущих предложения банках")
+Rel(aggregatorFinanceData, elastic,"чтение / запись")
+Rel(abc, aggregatorFinanceData,"Передача актуальных данных")
 
 Rel(site, smsGateway,"Взаимодействие с новым смс-шлюзом для подтверждения операции")
 Rel(application, smsGateway,"Взаимодействие с новым смс-шлюзом для подтверждения операции")
