@@ -1,0 +1,31 @@
+@startuml
+title Банк "Стандарт"
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Клиент", "Клиент Банка")
+Person(backOfficeWorker, "Сотрудник", "Сотрудник Бэк-офиса")
+Person(callCenterWorker, "Сотрудник", "Сотрудник Кол-центра")
+
+
+System(internetBanking, "Интернет-Банкинг", "Сайт или приложение банка")
+System(aggregator, "Агрегатор фин данных", "Собирает и предоставляет актуальные данные по %, кредитам и депозитам")
+System(callCenter, "Кол-центр", "Приложение для сотрудников кол-центра")
+System(abc, "АБС", "Основное ядро банка")
+System(smsGateway, "Смс-Шлюз", "Собственный смс-шлюз")
+System(email1, "Почта", "Обмен информацией по почте")
+System(email2, "Почта", "Обмен информацией по почте")
+
+Rel(user, internetBanking, "Клиент взаимодействует с банковской системой")
+Rel(internetBanking, aggregator,"Получает актуальные данные по процентам, депозитам и кредитам")
+Rel(internetBanking, smsGateway,"Взаимодействие с новым смс-шлюзом для подтверждения операции")
+Rel(internetBanking, abc,"Отправляет сформированные заявку в АБС")
+Rel(abc, backOfficeWorker,"Обрабатывает заявки")
+Rel(abc, callCenter,"Передает данные новых клиентов в кол-центр")
+Rel(callCenter,callCenterWorker,"Созванивается с новыми клиентами для посещения отделения")
+
+Rel(aggregator,email1,"Отправка актуальных данных по расписанию")
+Rel(email2,callCenter,"Загрузка актуальных данных в приложение кол-центра сотрудником")
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+title Банк "Стандарт"
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Клиент", "Клиент Банка")
+Person(backOfficeWorker, "Сотрудник", "Сотрудник Бэк-офиса")
+Person(callCenterWorker, "Сотрудник", "Сотрудник Кол-центра")
+
+Container_Boundary(BankingContext, "Контекст банковской инфраструктуры") {
+  Container(site, "Сайт Банка", "Php, React", "Предоставляет функционал банка новым и существующим клиентам")
+  Container(application, "Приложение Банка", "Asp.Net", "Предоставляет функционал банка существующим клиентам")
+  Container(msSql, "БД", "MS SQL", "Хранит данные интернет-банка")
+  Container(kafka, "Message Broker", "Kafka", "Асинхронный обмен данными")
+
+  Container(aggregatorFinanceData, "Агрегатор фин данных", "Java", "Собирает статистику; предоставляет данные через апи")
+  Container(elastic, "БД", "ElasticSearch", "Статистика по выданным депозитам, кредитам и текущие предложения банка")
+
+  System(smsGateway, "Смс-Шлюз", "Собственный смс-шлюз")
+  Container(messageHandler, "Обработчик сообщений", "Java", "Трансформирует заявки клиентов и передает в АБС по API")
+  Container(abc, "АБС", "Delphi","Основное ядро банка")
+  Container(oracle, "БД", "Oracle, Pl-SQL","Хранилище данных, хранимые процедуры")
+
+}
+
+System(callCenter, "Кол-центр", "Приложение для сотрудников кол-центра")
+
+Rel(user, site, "Клиент взаимодействует с сайтом банка")
+Rel(user, application, "Клиент взаимодействует с мобильным приложением банка")
+
+Rel(application, msSql,"чтение / запись")
+
+Rel(application, kafka,"Заявки пользователей")
+Rel(site, kafka,"Заявки пользователей")
+
+Rel(application, aggregatorFinanceData,"Получает информацию о текущих предложения банках, в том числе персонализированных")
+Rel(site, aggregatorFinanceData,"Получает информацию о текущих предложения банках")
+Rel(aggregatorFinanceData, elastic,"чтение / запись")
+Rel(abc, aggregatorFinanceData,"Передача актуальных данных")
+
+Rel(site, smsGateway,"Взаимодействие с новым смс-шлюзом для подтверждения операции")
+Rel(application, smsGateway,"Взаимодействие с новым смс-шлюзом для подтверждения операции")
+
+Rel(kafka, messageHandler,"Принимает заявки клиентов, передает в АБС")
+Rel(messageHandler, abc,"Передает заявки в АБС")
+Rel(abc, oracle,"чтение / запись")
+
+Rel(abc, backOfficeWorker,"Обрабатывает заявки")
+Rel(abc, callCenter,"Передает данные новых клиентов в кол-центр")
+Rel(callCenter,callCenterWorker,"Созванивается с новыми клиентами для посещения отделения")
+@enduml
